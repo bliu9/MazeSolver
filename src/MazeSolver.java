@@ -29,7 +29,23 @@ public class MazeSolver {
     public ArrayList<MazeCell> getSolution() {
         // TODO: Get the solution from the maze
         // Should be from start to end cells
-        return null;
+        ArrayList<MazeCell> toReturn = new ArrayList<MazeCell>();
+        ArrayList<MazeCell> toFlip = new ArrayList<>();
+
+        MazeCell currentCell = maze.getEndCell();
+        while (!currentCell.equals(maze.getStartCell()))
+        {
+            toFlip.add(currentCell);
+            currentCell = currentCell.getParent();
+        }
+        toFlip.add(maze.getStartCell());
+
+        for (int i = toFlip.size()-1; i>=0;i--)
+        {
+            toReturn.add(toFlip.get(i));
+        }
+
+        return toReturn;
     }
 
     /**
