@@ -5,6 +5,8 @@
  */
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MazeSolver {
     private Maze maze;
@@ -55,7 +57,40 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeDFS() {
         // TODO: Use DFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        solveMazeDFSHelper(maze.getStartCell());
+        return getSolution();
+    }
+
+    public void solveMazeDFSHelper(MazeCell cell)
+    {
+        int col = cell.getCol();
+        int row = cell.getRow();
+        //base case: if the cell that you are trying to explore is the end
+        if (maze.getCell(row,col-1).equals(maze.getEndCell()) || maze.getCell(row+1,col).equals(maze.getEndCell())
+                || maze.getCell(row,col+1).equals(maze.getEndCell()) || maze.getCell(row-1,col).equals(maze.getEndCell()) )
+        {
+            return;
+        }
+
+        //recursive cases: explore north, east, south, west in that order
+
+        //NEED TO CHECK IF YOU WILL GET OUT PF BOUNDS ERROR
+        if (maze.isValidCell(row-1,col))
+        {
+            solveMazeDFSHelper(maze.getCell(row-1,col));
+        }
+        if (maze.isValidCell(row,col+1))
+        {
+            solveMazeDFSHelper(maze.getCell(row,col+1));
+        }
+        if (maze.isValidCell(row+1,col))
+        {
+            solveMazeDFSHelper(maze.getCell(row+1,col));
+        }
+        if (maze.isValidCell(row,col-1))
+        {
+            solveMazeDFSHelper(maze.getCell(row,col-1));
+        }
     }
 
     /**
