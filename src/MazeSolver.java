@@ -65,30 +65,36 @@ public class MazeSolver {
     {
         int col = cell.getCol();
         int row = cell.getRow();
-        //base case: if the cell that you are trying to explore is the end
-        if (maze.getCell(row,col-1).equals(maze.getEndCell()) || maze.getCell(row+1,col).equals(maze.getEndCell())
-                || maze.getCell(row,col+1).equals(maze.getEndCell()) || maze.getCell(row-1,col).equals(maze.getEndCell()) )
+        //base case: if the current cell is the end
+        if ((maze.isValidCell(row,col) && maze.getCell(row,col).equals(maze.getEndCell())))
         {
+            maze.getEndCell().setParent(cell);
             return;
         }
 
         //recursive cases: explore north, east, south, west in that order
-
-        //NEED TO CHECK IF YOU WILL GET OUT PF BOUNDS ERROR
         if (maze.isValidCell(row-1,col))
         {
+            maze.getCell(row-1,col).setParent(cell);
+            maze.getCell(row-1,col).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row-1,col));
         }
         if (maze.isValidCell(row,col+1))
         {
+            maze.getCell(row,col+1).setParent(cell);
+            maze.getCell(row,col+1).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row,col+1));
         }
         if (maze.isValidCell(row+1,col))
         {
+            maze.getCell(row+1,col).setParent(cell);
+            maze.getCell(row+1,col).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row+1,col));
         }
         if (maze.isValidCell(row,col-1))
         {
+            maze.getCell(row,col-1).setParent(cell);
+            maze.getCell(row,col-1).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row,col-1));
         }
     }
@@ -100,8 +106,50 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeBFS() {
         // TODO: Use BFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        solveMazeBFSHelper(maze.getStartCell());
+        return getSolution();
     }
+
+    public void solveMazeBFSHelper(MazeCell cell)
+    {
+        int row = cell.getRow();
+        int col = cell.getCol();
+        //base case: if the end cell is the same as the cell you're currently looking at
+        if (cell.equals(maze.getEndCell()))
+        {
+            return;
+        }
+
+        //add squares to explore to a queue
+        Queue<MazeCell> toExplore = new LinkedList<>();
+        if (maze.isValidCell(row-1,col))
+        {
+            toExplore.add(maze.getCell(row-1,col));
+        }
+        if (maze.isValidCell(row,col+1))
+        {
+            toExplore.add(maze.getCell(row,col+1));
+        }
+        if (maze.isValidCell(row+1,col))
+        {
+            toExplore.add(maze.getCell(row+1,col));
+        }
+        if (maze.isValidCell(row,col-1))
+        {
+            toExplore.add(maze.getCell(row,col-1));
+        }
+
+        //go through the queue and explore the cells around it
+        int size = toExplore.size();
+        for (int i = 0; i<size;i++)
+        {
+            toExplore.peek().setParent(cell);
+            toExplore.peek().setExplored(true);
+            solveMazeBFSHelper(toExplore.remove());
+        }
+
+    }
+
 
     public static void main(String[] args) {
         // Create the Maze to be solved
