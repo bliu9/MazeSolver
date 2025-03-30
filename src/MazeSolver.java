@@ -7,6 +7,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 public class MazeSolver {
     private Maze maze;
@@ -32,19 +33,24 @@ public class MazeSolver {
         // TODO: Get the solution from the maze
         // Should be from start to end cells
         ArrayList<MazeCell> toReturn = new ArrayList<MazeCell>();
-        ArrayList<MazeCell> toFlip = new ArrayList<>();
+        Stack<MazeCell> toFlip = new Stack<>();
 
         MazeCell currentCell = maze.getEndCell();
+
+        //Adds all the cells in the solution to the toFlip stack in end to start order
         while (!currentCell.equals(maze.getStartCell()))
         {
-            toFlip.add(currentCell);
+            //Add the current cell to the list of cells in the solution
+            toFlip.push(currentCell);
+            //Update the current cell to the parent of the current cell
             currentCell = currentCell.getParent();
         }
-        toFlip.add(maze.getStartCell());
+        toFlip.push(maze.getStartCell());
 
-        for (int i = toFlip.size()-1; i>=0;i--)
+        //Flips the order of the toFlip arraylist by popping each element into the toReturn arraylist
+        while (!toFlip.isEmpty())
         {
-            toReturn.add(toFlip.get(i));
+            toReturn.add(toFlip.pop());
         }
 
         return toReturn;
@@ -57,6 +63,7 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeDFS() {
         // TODO: Use DFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
+        // Call helper function to solve maze
         solveMazeDFSHelper(maze.getStartCell());
         return getSolution();
     }
@@ -65,34 +72,42 @@ public class MazeSolver {
     {
         int col = cell.getCol();
         int row = cell.getRow();
-        //base case: if the current cell is the end
+        //Base case: if the current cell is the end
         if ((maze.isValidCell(row,col) && maze.getCell(row,col).equals(maze.getEndCell())))
         {
             maze.getEndCell().setParent(cell);
             return;
         }
 
-        //recursive cases: explore north, east, south, west in that order
+        //Recursive cases: explore north, east, south, west in that order
+        //explore north cell
         if (maze.isValidCell(row-1,col))
         {
+            //Set parent and explore status before moving on to next cell
             maze.getCell(row-1,col).setParent(cell);
             maze.getCell(row-1,col).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row-1,col));
         }
+        //explore east cell
         if (maze.isValidCell(row,col+1))
         {
+            //Set parent and explore status before moving on to next cell
             maze.getCell(row,col+1).setParent(cell);
             maze.getCell(row,col+1).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row,col+1));
         }
+        //explore south cell
         if (maze.isValidCell(row+1,col))
         {
+            //Set parent and explore status before moving on to next cell
             maze.getCell(row+1,col).setParent(cell);
             maze.getCell(row+1,col).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row+1,col));
         }
+        //explore west cell
         if (maze.isValidCell(row,col-1))
         {
+            //Set parent and explore status before moving on to next cell
             maze.getCell(row,col-1).setParent(cell);
             maze.getCell(row,col-1).setExplored(true);
             solveMazeDFSHelper(maze.getCell(row,col-1));
@@ -106,6 +121,7 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeBFS() {
         // TODO: Use BFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
+        // Call function to solve the maze
         solveMazeBFSHelper(maze.getStartCell());
         return getSolution();
     }
@@ -120,7 +136,7 @@ public class MazeSolver {
             return;
         }
 
-        //add squares to explore to a queue
+        //Add squares to explore to a queue (in north, east, south, west order)
         Queue<MazeCell> toExplore = new LinkedList<>();
         if (maze.isValidCell(row-1,col))
         {
@@ -139,10 +155,11 @@ public class MazeSolver {
             toExplore.add(maze.getCell(row,col-1));
         }
 
-        //go through the queue and explore the cells around it
+        //Go through each cell the queue and explore the cells around it
         int size = toExplore.size();
         for (int i = 0; i<size;i++)
         {
+            //Set parent and explored statuses before moving on to the next cell
             toExplore.peek().setParent(cell);
             toExplore.peek().setExplored(true);
             solveMazeBFSHelper(toExplore.remove());
